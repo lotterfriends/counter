@@ -1,0 +1,56 @@
+
+body {
+	font-size: 20px;
+}
+
+p.analog-clock-diget {
+	position: relative;
+	height: 1.5em;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	line-height: 1;
+	font-size: 2em;
+	font-family: sans-serif;
+	text-shadow: 0 0 .1em #000;
+	font-weight: bold;
+	color: #fff;
+	float: left;
+	border-top: 1px solid #000;
+	border-radius: .1em;
+	margin-right: 1px;
+	background: linear-gradient(to bottom, rgba(68,68,68,1) 0%,rgba(14,14,14,1) 100%);
+	box-shadow: 0 0 .1em #666;
+	width: 1em;
+	text-align: center;
+}
+
+.analog-clock-diget-new,
+.analog-clock-diget-old {
+	left: .25em;
+	overflow: hidden;
+	position: absolute;
+	height: .5em;
+	width: 1em;
+	left: 0;
+}
+
+.analog-clock-diget-new {
+	z-index: 1;
+	top: -.25em;
+	height: 2em;
+}
+
+.analog-clock-diget-new span {
+	vertical-align: baseline;
+	display: inline;
+	line-height: 2;
+}
+
+.analog-clock-diget-old {
+	border-bottom: 1px solid #000;
+	z-index: 2;
+	top: .25em;
+}
+
