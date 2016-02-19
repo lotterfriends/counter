@@ -3,8 +3,9 @@
 	'use strict';
 
 	var default_options =  {
-		start_value: 0,
-		digits: 7
+		startValue: 0,
+		digits: 7,
+		interval: 1000
 	}
 
 
@@ -85,8 +86,8 @@
 
 
 	function Counter(target, options) {
+		var _this = this;
 		this.target = document.querySelector(target);
-
 		// merge options
 		this.options = default_options;
 		for (var i in options) {
@@ -95,8 +96,8 @@
 			}
 		}
 
+		this.currentValue = this.options.startValue;
 		this.init();
-		this.countToZero();
 	}
 
 
@@ -104,7 +105,7 @@
 
 		var _this = this;
 
-		var padValue = pad(this.options.start_value, this.options.digits);
+		var padValue = pad(this.options.startValue, this.options.digits);
 		var padArray = padValue.split('');
 
 		padArray.forEach(function(value, index) {
@@ -113,33 +114,78 @@
 			digetHolder.dataset.acdValue = value;
 			digetHolder.dataset.acdIndex = index;
 
-			var oldValue = document.createElement('span');
-			addClass(oldValue, 'analog-clock-diget-old');
-			var oldValueSpan = document.createElement('span');
-			oldValueSpan.appendChild(document.createTextNode(value));
-			oldValue.appendChild(oldValueSpan);
+			var element1 = document.createElement('div');
+			addClass(element1, 'analog-clock-diget-new');
+			var element1Span = document.createElement('span');
+			element1Span.appendChild(document.createTextNode(value));
+			element1.appendChild(element1Span);
 			
-			var newValue = document.createElement('span');
-			addClass(newValue, 'analog-clock-diget-new');
-			var newValueSpan = document.createElement('span');
-			newValueSpan.appendChild(document.createTextNode(value));
-			newValue.appendChild(newValueSpan);
+			var element2 = document.createElement('div');
+			addClass(element2, 'analog-clock-diget-old');
+			var element2Span = document.createElement('span');
+			element2Span.appendChild(document.createTextNode(value));
+			element2.appendChild(element2Span);
+
 			
-			digetHolder.appendChild(oldValue);
-			digetHolder.appendChild(newValue);
+			digetHolder.appendChild(element1);
+			digetHolder.appendChild(element2);
+
 
 			_this.target.appendChild(digetHolder);
 
 		});
 
-		_this.target.dataset.acdValue = this.options.start_value;
+		_this.target.dataset.acdValue = this.options.startValue;
 	};
 
-	Counter.countToZero = function() {
-		var _this = this;
-		window.setTimeout(function() {
+	Counter.prototype.changeDiget = function(element, value) {
+		if (typeof element !== 'undefined') {
+			var spans = element.querySelectorAll('span');
+			for (var i = 0; i < spans.length; ++i) {
+			  spans[i].innerHTML = value;
+			}
+			element.dataset.acdValue = value;
+		}
+	};
 
-		}, 1000);
+	Counter.prototype.changeNumber = function(targetNumber) {
+		var targetNumberString	= targetNumber.toString();
+		var startIndex = this.options.digits - targetNumberString.length;
+		var digetArray = targetNumberString.split('');
+		var digetCounter = 0;
+		for (var i = 0; i < this.options.digits; i++) {
+			var element = this.target.querySelector("[data-acd-index='" + i + "']");
+			if (i < startIndex) {
+				this.changeDiget(element, 0);
+			} else {
+				this.changeDiget(element, digetArray[digetCounter]);
+				digetCounter++;
+			}
+		}
+		this.currentValue = targetNumber;
+	};
+
+	Counter.prototype.countDown = function() {
+		var _this = this;
+		var countIntervalId = window.setInterval(function() {
+			_this.changeNumber(_this.currentValue - 1);
+			if (_this.currentValue === 0) {
+				window.clearInterval(countIntervalId);
+				return;
+			}
+		}, this.options.interval);
+	};
+
+	Counter.prototype.countUp = function() {
+		var _this = this;
+		var max = Math.pow(10, this.options.digits) - 1;
+		var countIntervalId = window.setInterval(function() {
+			_this.changeNumber(_this.currentValue + 1);
+			if (_this.currentValue === max) {
+				window.clearInterval(countIntervalId);
+				return;
+			}
+		}, this.options.interval);
 	};
 
 
@@ -148,5 +194,7 @@
 }).call(this);
 
 var counter = new Counter('.hier-rein', {
-	start_value: 3894 
+	startValue: 12
 });
+
+counter.countUp();
